@@ -1,6 +1,6 @@
 {
   "name": "redux-proxy-selectors",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "Redux enhancer to access selectors directly from state as getters.",
   "main": "lib/redux-proxy-selectors.js",
   "module": "es/redux-proxy-selectors.js",
