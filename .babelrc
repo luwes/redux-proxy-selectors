@@ -1,0 +1,21 @@
+{
+  "presets": [
+    ["@babel/preset-env", {
+      "modules": false,
+      "loose": true,
+      "shippedProposals": true,
+      "targets": {
+        "browsers": ["ie >= 11"]
+      }
+    }]
+  ],
+  "env": {
+    "commonjs": {
+      "presets": [
+        ["@babel/preset-env", {
+            "loose": true
+        }]
+      ]
+    }
+  }
+}
