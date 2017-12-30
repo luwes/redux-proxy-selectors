@@ -14,7 +14,7 @@ describe('Index', () => {
 
       expect(store.getState().getDuration).toBe(100)
 
-      store.dispatch(play());
+      store.dispatch(play())
       expect(store.getState().ui.video.isPlaying).toBe(true)
     })
   })

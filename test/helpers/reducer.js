@@ -51,7 +51,7 @@ function video(state = videoInitialState, action) {
   }
 }
 
-const getDuration = (state) => state.duration
+const getDuration = state => state.duration
 
 const uiSelector = {
   video: {
@@ -62,9 +62,6 @@ const uiSelector = {
       return state.duration - state.ui.video.currentTime
     }
   }
-};
-
-export {
-  getDuration,
-  uiSelector as ui
 }
+
+export { getDuration, uiSelector as ui }

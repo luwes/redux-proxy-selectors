@@ -60,7 +60,7 @@ function generateSelectorsMap(obj, keys = []) {
         pathObj[key] = obj[key]
         return Object.assign(acc, { [path]: pathObj })
       }
-      return  Object.assign(acc, { [key]: obj[key] })
+      return Object.assign(acc, { [key]: obj[key] })
     }
     if (typeof obj[key] === 'object') {
       return Object.assign(
