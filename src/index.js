@@ -16,7 +16,7 @@ export function createProxySelectors(selectors = {}) {
       if (cachedState) {
         return cachedState
       }
-      cachedState = defineSelectors(oldState, store.getState(), map)
+      cachedState = createSelectors(oldState, store.getState(), map)
       return cachedState
     }
 
@@ -24,19 +24,18 @@ export function createProxySelectors(selectors = {}) {
   }
 }
 
-function defineSelectors(oldState, newState, map) {
-  for (const path in map) {
-    const oldSlice = get(oldState, path)
-    const newSlice = get(newState, path)
-    // If the slice didn't get updated the defined props are still there.
-    if (newSlice && oldSlice !== newSlice) {
-      const selectors = map[path]
-      for (const name in selectors) {
-        const selector = selectors[name]
-        if (!Object.getOwnPropertyDescriptor(newSlice, name)) {
-          Object.defineProperty(newSlice, name, {
-            get: () => selector(newState)
-          })
+function createSelectors(oldState, newState, map) {
+  for (const key in map) {
+    const value = map[key]
+    if (typeof value === 'function') {
+      defineSelector(newState, key, value, newState)
+    } else if (typeof value === 'object') {
+      const oldSlice = get(oldState, key)
+      const newSlice = get(newState, key)
+      // If the slice didn't get updated the defined props are still there.
+      if (oldSlice !== newSlice) {
+        for (const method in value) {
+          defineSelector(newSlice, method, value[method], newState)
         }
       }
     }
@@ -44,13 +43,24 @@ function defineSelectors(oldState, newState, map) {
   return newState
 }
 
+function defineSelector(target, property, selector, state) {
+  if (!Object.getOwnPropertyDescriptor(target, property)) {
+    Object.defineProperty(target, property, {
+      get: () => selector(state)
+    })
+  }
+}
+
 function generateSelectorsMap(obj, keys = []) {
   return Object.keys(obj).reduce((acc, key) => {
     if (typeof obj[key] === 'function' && key !== 'default') {
       const path = keys.join('.')
-      const pathObj = acc[path] || {}
-      pathObj[key] = obj[key]
-      return Object.assign(acc, { [path]: pathObj })
+      if (path) {
+        const pathObj = acc[path] || {}
+        pathObj[key] = obj[key]
+        return Object.assign(acc, { [path]: pathObj })
+      }
+      return  Object.assign(acc, { [key]: obj[key] })
     }
     if (typeof obj[key] === 'object') {
       return Object.assign(
@@ -63,6 +73,10 @@ function generateSelectorsMap(obj, keys = []) {
 }
 
 function get(obj, path, defaultValue) {
+  if (typeof obj === 'undefined') {
+    return defaultValue
+  }
+
   const keys = path.split('.')
   for (let i = 0; i < keys.length; i++) {
     if (typeof obj === 'undefined') {
@@ -70,5 +84,6 @@ function get(obj, path, defaultValue) {
     }
     obj = obj[keys[i]]
   }
-  return obj
+
+  return obj[path] || obj
 }
