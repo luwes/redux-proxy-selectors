@@ -1,6 +1,6 @@
 import { createStore } from 'redux'
 import { createProxySelectors } from '../'
-import { play } from './helpers/actionCreators'
+import { play, timeUpdate } from './helpers/actionCreators'
 import reducer, * as selectors from './helpers/reducer'
 
 describe('Index', () => {
@@ -16,6 +16,9 @@ describe('Index', () => {
 
       store.dispatch(play())
       expect(store.getState().ui.video.isPlaying).toBe(true)
+
+      store.dispatch(timeUpdate(34))
+      expect(store.getState().ui.video.timeUntilEnd).toBe(66)
     })
   })
 })
