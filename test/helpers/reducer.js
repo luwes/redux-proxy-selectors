@@ -1,13 +1,21 @@
-import { PLAY, ENDED, TIME_UPDATE } from './actionTypes'
+import { PLAY, ENDED, TIME_UPDATE, DURATION_UPDATE } from './actionTypes'
 
 const initialState = {
   duration: 100
 }
 
 export default function reducer(state = initialState, action) {
-  return {
-    ...state,
-    ui: ui(state.ui, action)
+  switch (action.type) {
+    case DURATION_UPDATE:
+      return {
+        ...state,
+        duration: action.payload
+      }
+    default:
+      return {
+        ...state,
+        ui: ui(state.ui, action)
+      }
   }
 }
 

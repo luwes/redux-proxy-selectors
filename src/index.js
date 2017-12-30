@@ -16,7 +16,7 @@ export function createProxySelectors(selectors = {}) {
       if (cachedState) {
         return cachedState
       }
-      cachedState = createSelectors(oldState, store.getState(), map)
+      cachedState = createSelectors(oldState, store.getState(), map, store)
       return cachedState
     }
 
@@ -24,18 +24,18 @@ export function createProxySelectors(selectors = {}) {
   }
 }
 
-function createSelectors(oldState, newState, map) {
+function createSelectors(oldState, newState, map, store) {
   for (const key in map) {
     const value = map[key]
     if (typeof value === 'function') {
-      defineSelector(newState, key, value, newState)
+      defineSelector(newState, key, value, store)
     } else if (typeof value === 'object') {
       const oldSlice = get(oldState, key)
       const newSlice = get(newState, key)
       // If the slice didn't get updated the defined props are still there.
       if (oldSlice !== newSlice) {
         for (const method in value) {
-          defineSelector(newSlice, method, value[method], newState)
+          defineSelector(newSlice, method, value[method], store)
         }
       }
     }
@@ -43,10 +43,10 @@ function createSelectors(oldState, newState, map) {
   return newState
 }
 
-function defineSelector(target, property, selector, state) {
+function defineSelector(target, property, selector, store) {
   if (!Object.getOwnPropertyDescriptor(target, property)) {
     Object.defineProperty(target, property, {
-      get: () => selector(state)
+      get: () => selector(store.getState())
     })
   }
 }
